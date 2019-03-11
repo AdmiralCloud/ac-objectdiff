@@ -60,15 +60,6 @@ const userValue = {
               boost: 124556,
               suffix: 'delta'
             }]
-          },
-          {
-            field: 'container_description',
-            hasLanguage: true,
-            searchTypes: [{
-              type: 'match_phrase',
-              boost: 1e6,
-              suffix: 'exact'
-            }]
           }
         ]
       }
@@ -81,12 +72,14 @@ describe('TESTING comparison', function () {
     let testObj = _.clone(userValue)
     let r = acDiff.diff(testObj, defValue)
 
+    // concat
     expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc'])
+
     expect(r.searchConfiguration.mediaContainer.obj).toEqual({ objTest1: false, objTest3: true })
     let first = _.first(r.searchConfiguration.mediaContainer.searchableFields.fields)
     expect(first.field).toEqual('container_name')
     expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
-    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(1235667)
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
     return done()
   })
 
@@ -101,8 +94,54 @@ describe('TESTING comparison', function () {
     let first = _.first(r.searchConfiguration.mediaContainer.searchableFields.fields)
     expect(first.field).toEqual('container_name')
     expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
-    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(1235667)
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
 
+    return done()
+  })
+
+  it('Return combined object', done => {
+    let testObj = _.clone(userValue)
+    let r = acDiff.merge(testObj, defValue)
+    // from user value
+    expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc', 'def'])
+    expect(r.searchConfiguration.mediaContainer.obj).toEqual(userValue.searchConfiguration.mediaContainer.obj)
+    expect(r.searchConfiguration.defaultSearchFields).toEqual(defValue.searchConfiguration.defaultSearchFields)
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+
+    // mediacontainer.searchableField.fields should be merged and contain 3 elements, container_name twice
+    let first = _.first(r.searchConfiguration.mediaContainer.searchableFields.fields)
+    expect(first.field).toEqual('container_name')
+
+    expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
+
+    let test = _.filter(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_name' })
+    expect(test.length).toEqual(2)
+
+    test = _.find(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
+    let compare = _.find(defValue.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
+    expect(test.searchTypes).toEqual(compare.searchTypes)
+
+    return done()
+  })
+
+  it('Return combined object - use fieldIdentifier', done => {
+    let testObj = _.clone(userValue)
+    let r = acDiff.merge(testObj, defValue, { mergeArray: { mode: 'merge', field: 'field' } })
+    // from user value
+    expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc', 'def'])
+    expect(r.searchConfiguration.mediaContainer.obj).toEqual(userValue.searchConfiguration.mediaContainer.obj)
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+
+    // from default
+    expect(r.searchConfiguration.defaultSearchFields).toEqual(defValue.searchConfiguration.defaultSearchFields)
+
+    let test = _.find(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_name' })
+    let compareUser = _.find(userValue.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_name' })
+    expect(test.searchTypes).toEqual(compareUser.searchTypes)
+
+    test = _.find(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
+    let compare = _.find(defValue.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
+    expect(test.searchTypes).toEqual(compare.searchTypes)
     return done()
   })
 })

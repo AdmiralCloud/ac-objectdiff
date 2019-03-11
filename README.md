@@ -3,6 +3,8 @@ Ingests a default and a target object and returns only values from target object
 
 This way, you can store only the difference.
 
+Or use it to merge a custom object with a default object.
+
 ## Usage
 
 ***objectDiff.diff(targetObj, defaultObject, options)***
@@ -12,6 +14,23 @@ Returns an object which contains only the difference from target to default obje
 Rules
 + objects will be examined and compared on property level
 + for all other field targetObject's value will take precedence
+
+***objectDiff.merge(targetObj, defaultObject, options)***
+
+Returns an object which contains only the difference from target to default object.
+
+Options:
++ mergeArray OBJ
+  + mode STRING concat OR target - concat concatenates the arrays (see below)
+  + field STRING if using concat with array of objects, field is used to identify values in both origin and target
+
+Rules
++ objects will be examined and compared on property level
++ for all other field targetObject's value will take precedence
++ except for arrays - they have their own rules
+
+Arrays can me concatenated (and uniquefied) or in target mode, the target will overwrite the origin's array completely. If the array is an array ob objects, use concatenate with a field options to merge arrays of objects based in that property (i.e. if a target value for that property exists, it will overwrite an origin value)
+
 
 ## Examples
 
