@@ -24,7 +24,7 @@ const objectDiff = () => {
     let path
     check(targetObject, defaultObject, { path, objectToStore })
 
-    // mergec remainuing items from objToCheck
+    // merge remaining items from objToCheck
     _.merge(objectToStore, targetObject)
     return objectToStore
   }
@@ -49,8 +49,10 @@ const objectDiff = () => {
 
     let targetObject = _.cloneDeep(objToCheck)
     let combinedObject = {}
-    let path
-    checkMerge(targetObject, defaultObject, { path, combinedObject })
+
+    options = options || {}
+    options.combinedObject = combinedObject
+    checkMerge(targetObject, defaultObject, options)
 
     // mergec remainuing items from objToCheck
     _.merge(combinedObject, targetObject)
@@ -81,7 +83,8 @@ const objectDiff = () => {
         // target has key - use merge
         if (_.isPlainObject(_.get(target, key))) {
           if (debugMode) console.log('Go deeper', path ? path + '.' + key : key)
-          checkMerge(objToCheck, defaultObject, { path: path ? path + '.' + key : key, combinedObject })
+          options.path = path ? path + '.' + key : key
+          checkMerge(objToCheck, defaultObject, options)
         }
         else if (_.isArray(_.get(target, key))) {
           let mode = _.get(options, 'mergeArray.mode', 'concat')
