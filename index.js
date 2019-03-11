@@ -77,7 +77,7 @@ const objectDiff = () => {
       }
       if (!_.has(target, key) || _.isNil(_.get(target, key))) {
         // use the default value
-        _.set(combinedObject, path + '.' + key, _.get(origin, key))
+        _.set(combinedObject, path ? path + '.' + key : key, _.get(origin, key))
       }
       else {
         // target has key - use merge
@@ -136,14 +136,14 @@ const objectDiff = () => {
               combinedArray = _.uniq(_.concat(_.get(origin, key), _.get(target, key)))
             }
           }
-          _.set(combinedObject, path + '.' + key, combinedArray)
+          _.set(combinedObject, path ? path + '.' + key : key, combinedArray)
           // remove from targetObject
           _.unset(target, key)
         }
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
           if (debugMode) console.log('Store key %s with value %j', key, _.get(target, key))
-          _.set(combinedObject, path + '.' + key, _.get(target, key))
+          _.set(combinedObject, path ? path + '.' + key : key, _.get(target, key))
           // remove from targetObject
           _.unset(target, key)
         }
@@ -168,14 +168,14 @@ const objectDiff = () => {
         }
         else if (_.isNull(_.get(target, key))) {
           if (debugMode) console.log('Remove key %s with value %j', key, _.get(target, key))
-          _.unset(objectToStore, path + '.' + key)
+          _.unset(objectToStore, path ? path + '.' + key : key)
           // remove from targetObject
           _.unset(target, key)
         }
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
           if (debugMode) console.log('Store key %s with value %j', key, _.get(target, key))
-          _.set(objectToStore, path + '.' + key, _.get(target, key))
+          _.set(objectToStore, path ? path + '.' + key : key, _.get(target, key))
           // remove from targetObject
           _.unset(target, key)
         }
