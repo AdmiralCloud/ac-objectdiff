@@ -24,6 +24,11 @@ const objectDiff = () => {
     let path
     check(targetObject, defaultObject, { path, objectToStore })
 
+    // remove NULL keys from targetObject
+    _.forOwn(targetObject, (val, key) => {
+      if (_.isNull(val)) _.unset(targetObject, key)
+    })
+
     // merge remaining items from objToCheck
     _.merge(objectToStore, targetObject)
     return objectToStore
