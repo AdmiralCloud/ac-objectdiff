@@ -68,7 +68,7 @@ const objectDiff = () => {
    *
    * @param {*} objToCheck
    * @param {*} defaultObject
-   * @param {*} options.mergeArray -> {mode: ['concat', 'target'], field: ''} // default concat, no field - duplicate
+   * @param {*} options.mergeArray -> {mode: ['concat', 'target'], field: ''} // default concat, no field - duplicate. You can alos use mergeArray.PATH.mode/field to set specific instructions for different paths
    */
   const checkMerge = (objToCheck, defaultObject, options) => {
     let path = _.get(options, 'path')
@@ -92,8 +92,8 @@ const objectDiff = () => {
           checkMerge(objToCheck, defaultObject, options)
         }
         else if (_.isArray(_.get(target, key))) {
-          let mode = _.get(options, 'mergeArray.mode', 'concat')
-          let fieldIdentifier = _.get(options, 'mergeArray.field')
+          let mode = _.get(options, 'mergeArray.' + (path ? path + '.' + key : key) + '.mode', _.get(options, 'mergeArray.mode', 'concat'))
+          let fieldIdentifier = _.get(options, 'mergeArray.' + (path ? path + '.' + key : key) + '.field', _.get(options, 'mergeArray.field'))
           let combinedArray
           // array of objects
           if (_.isPlainObject(_.first(_.get(target, key)))) {

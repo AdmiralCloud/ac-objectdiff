@@ -23,6 +23,7 @@ Options:
 + mergeArray OBJ
   + mode STRING concat OR target - concat concatenates the arrays (see below)
   + field STRING if using concat with array of objects, field is used to identify values in both origin and target
+  + you can also use a PATH to give more specific instructions (e.g mergeArray.PATH.mode)
 
 Rules
 + objects will be examined and compared on property level
