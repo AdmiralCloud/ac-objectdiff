@@ -3,9 +3,7 @@ const _ = require('lodash')
 const objectDiff = () => {
   const debugMode = process.env.NODE_DEBUGMODE
   /**
-   * Converts value into unit.
-   * If unit is not given, try to determine based on power of ten
-   * @param value FLOAT byte value
+   * Returns the difference between objToCheck and defaultObject
    */
   const diff = (objToCheck, defaultObject, options) => {
     if (!_.isObject(objToCheck)) {
@@ -30,7 +28,7 @@ const objectDiff = () => {
     })
 
     // merge remaining items from objToCheck
-    _.merge(objectToStore, targetObject)
+    //_.merge(objectToStore, targetObject)
     return objectToStore
   }
 
