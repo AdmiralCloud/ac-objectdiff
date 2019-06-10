@@ -71,21 +71,69 @@ const customerConfig = {
   name: 'AdmiralCloud',
   individualConfiguration: {
     audioLanguages: ['de', 'en']
+  },
+  anotherConfiguration: {
+    config1: {
+      thisIsAnArray: [22, 2, 96]
+    }
+  },
+  internalConfiguration: {
+    export:{ 
+      accessKeyId: 'xxxx',
+      secretAccessKey: 'yyyy',
+      bucket: 'ac-zzzzz' 
+    } 
   }
 }
 const customerConfigUpdate = {
+  name: 'AdmiralCloud',
   individualConfiguration: {
     imprint: {
       url: 'https://www.admiralcloud.com'
     }
-  }
+  },
+  anotherConfiguration: {
+    config1: {
+      thisIsAnArray: [22, 2, 96]
+    }
+  },
+  internalConfiguration: {
+    export:{ 
+      accessKeyId: 'xxxx',
+      secretAccessKey: 'yyyy',
+      bucket: 'ac-zzzzz' 
+    } 
+  }     
 }
 
 describe('TESTING comparison', function () {
+  it('Prepare customerConfig for storage - changed properties only (based on root level)', done => {
+    let testObj = _.clone(customerConfigUpdate)
+    let r = acDiff.diff(testObj, customerConfig)
+    expect(r.individualConfiguration.audioLanguages).toBeUndefined()
+    expect(r.individualConfiguration.imprint).toEqual(customerConfigUpdate.individualConfiguration.imprint)
+    expect(r.name).toBeUndefined()
+    expect(r.anotherConfiguration).toBeUndefined()
+    expect(r.internalConfiguration).toBeUndefined()
+
+    return done()
+  })
+
+  it('Prepare customerConfig for storage - another config has changed on deep level', done => {
+    let testObj = _.clone(customerConfigUpdate)
+    testObj.anotherConfiguration.config1.thisIsAnArray = [13, 11]
+    let r = acDiff.diff(testObj, customerConfig)
+    expect(r.individualConfiguration.audioLanguages).toBeUndefined()
+    expect(r.individualConfiguration.imprint).toEqual(customerConfigUpdate.individualConfiguration.imprint)
+    expect(r.name).toBeUndefined()
+    expect(r.anotherConfiguration.config1.thisIsAnArray).toEqual(testObj.anotherConfiguration.config1.thisIsAnArray)
+
+    return done()
+  })
+
   it('Store only items that are not in defValue', (done) => {
     let testObj = _.clone(userValue)
     let r = acDiff.diff(testObj, defValue)
-
     // concat
     expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc'])
 
@@ -94,22 +142,6 @@ describe('TESTING comparison', function () {
     expect(first.field).toEqual('container_name')
     expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
     expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
-    return done()
-  })
-
-  it('Prepare customerConfig for storage with missingProperties', done => {
-    let testObj = _.clone(customerConfigUpdate)
-    let r = acDiff.diff(testObj, customerConfig, { addMissingProperties: true })
-    expect(r.name).toEqual(customerConfig.name)
-    expect(r.individualConfiguration.audioLanguages).toEqual(customerConfig.individualConfiguration.audioLanguages)
-    expect(r.individualConfiguration.imprint).toEqual(customerConfigUpdate.individualConfiguration.imprint)
-    return done()
-  })
-
-  it('Prepare customerConfig for storage without missing properties', done => {
-    let testObj = _.clone(customerConfigUpdate)
-    let r = acDiff.diff(testObj, customerConfig, { addMissingProperties: false })
-    expect(r.individualConfiguration).toEqual(customerConfigUpdate.individualConfiguration)
     return done()
   })
 
@@ -174,4 +206,5 @@ describe('TESTING comparison', function () {
     expect(test.searchTypes).toEqual(compare.searchTypes)
     return done()
   })
+  
 })

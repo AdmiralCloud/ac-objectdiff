@@ -4,6 +4,10 @@ const objectDiff = () => {
   const debugMode = process.env.NODE_DEBUGMODE
   /**
    * Returns the difference between objToCheck and defaultObject
+   *
+   * options.removeEmptyObjects - BOOL if true, empty objects are removed from objectToCheck
+   * options.addMissingProperties - BOOL if true, properties missing on root level will be added from defaultObject.
+   * ATTN: On deeper levels (in objects) they are added!
    */
   const diff = (objToCheck, defaultObject, options) => {
     if (!_.isObject(objToCheck)) {
@@ -15,12 +19,10 @@ const objectDiff = () => {
     }
 
     let targetObject = _.cloneDeep(objToCheck)
-    let objectToStore = {}
 
     // define default options
     options = options || {}
     options.path = undefined
-    options.objectToStore = objectToStore
     check(targetObject, defaultObject, options)
 
     // remove NULL keys from targetObject
@@ -29,8 +31,7 @@ const objectDiff = () => {
     })
 
     // merge remaining items from objToCheck
-    _.merge(objectToStore, targetObject)
-    return objectToStore
+    return targetObject
   }
 
   /**
@@ -58,7 +59,7 @@ const objectDiff = () => {
     options.combinedObject = combinedObject
     checkMerge(targetObject, defaultObject, options)
 
-    // mergec remainuing items from objToCheck
+    // merge remainuing items from objToCheck
     _.merge(combinedObject, targetObject)
     return combinedObject
   }
@@ -157,9 +158,11 @@ const objectDiff = () => {
 
   const check = (objToCheck, defaultObject, options) => {
     let path = _.get(options, 'path')
-    let objectToStore = _.get(options, 'objectToStore')
     let origin = path ? _.get(defaultObject, path) : defaultObject
     let target = path ? _.get(objToCheck, path) : objToCheck
+    let optionRemoveEmptyObjects = _.get(options, 'removeEmptyObjects', true)
+    const level = _.size(_.split(path, '.')) - 1
+
     _.forOwn(origin, (val, key) => {
       if (debugMode) {
         console.log(_.repeat('-', 60))
@@ -169,33 +172,57 @@ const objectDiff = () => {
         if (_.isPlainObject(_.get(target, key))) {
           if (debugMode) console.log('Go deeper', path ? path + '.' + key : key)
           options.path = path ? path + '.' + key : key
+          options.addMissingProperties = level > 0
           check(objToCheck, defaultObject, options)
         }
         else if (_.isNull(_.get(target, key))) {
           if (debugMode) console.log('Remove key %s with value %j', key, _.get(target, key))
-          _.unset(objectToStore, path ? path + '.' + key : key)
+          _.unset(objToCheck, path ? path + '.' + key : key)
           // remove from targetObject
           _.unset(target, key)
         }
         else if (_.isArray(_.get(target, key))) {
           let difference = _.differenceWith(_.get(target, key), _.get(origin, key), _.isEqual)
-          if (_.size(difference)) {
+          if (_.size(_.get(origin, key)) !== _.size(_.get(target, key)) || _.size(difference)) {
             if (debugMode) console.log('Store Array key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
-            _.set(objectToStore, path ? path + '.' + key : key, _.get(target, key))
-            // remove from targetObject
+            _.set(objToCheck, path ? path + '.' + key : key, _.get(target, key))
+          }
+          else {
             _.unset(target, key)
           }
         }
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
           if (debugMode) console.log('Store key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
-          _.set(objectToStore, path ? path + '.' + key : key, _.get(target, key))
-          // remove from targetObject
+          _.set(objToCheck, path ? path + '.' + key : key, _.get(target, key))
+        }
+        else if (!options.addMissingProperties) {
+          // target and origin are identical
           _.unset(target, key)
         }
       }
       else if (_.get(options, 'addMissingProperties') && val) {
-        _.set(objectToStore, path ? path + '.' + key : key, val)
+        _.set(objToCheck, path ? path + '.' + key : key, val)
+      }
+    })
+
+    // remove empty objects
+    if (optionRemoveEmptyObjects) {
+      removeEmptyObjects(objToCheck)
+    }
+  }
+
+  const removeEmptyObjects = (objToCheck, options) => {
+    let path = _.get(options, 'path')
+    let targetObj = path ? _.get(objToCheck, path) : objToCheck
+    options = options || {}
+    _.forOwn(targetObj, (val, key) => {
+      if (_.isPlainObject(val) && _.isEmpty(val)) {
+        _.unset(targetObj, key)
+      }
+      else if (_.isPlainObject(val)) {
+        options.path = path ? path + '.' + key : key
+        removeEmptyObjects(objToCheck, options)
       }
     })
   }
