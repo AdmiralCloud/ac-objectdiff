@@ -3,7 +3,7 @@
   "author": "Mark Poepping (https://www.mmpro.de)",
   "license": "MIT",
   "repository": "mmpro/ac-objectdiff",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "dependencies": {
     "lodash": "^4.17.11"
   },
