@@ -175,9 +175,18 @@ const objectDiff = () => {
           // remove from targetObject
           _.unset(target, key)
         }
+        else if (_.isArray(_.get(target, key))) {
+          let difference = _.differenceWith(_.get(target, key), _.get(origin, key), _.isEqual)
+          if (_.size(difference)) {
+            if (debugMode) console.log('Store Array key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
+            _.set(objectToStore, path ? path + '.' + key : key, _.get(target, key))
+            // remove from targetObject
+            _.unset(target, key)
+          }
+        } 
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
-          if (debugMode) console.log('Store key %s with value %j', key, _.get(target, key))
+          if (debugMode) console.log('Store key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
           _.set(objectToStore, path ? path + '.' + key : key, _.get(target, key))
           // remove from targetObject
           _.unset(target, key)
