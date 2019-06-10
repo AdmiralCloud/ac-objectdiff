@@ -14,13 +14,14 @@ const objectDiff = () => {
       return { message: 'defaultObject_mustBeObject' }
     }
 
-    // define default options
-    options = options || {}
-
     let targetObject = _.cloneDeep(objToCheck)
     let objectToStore = {}
-    let path
-    check(targetObject, defaultObject, { path, objectToStore })
+
+    // define default options
+    options = options || {}
+    options.path = undefined
+    options.objectToStore = objectToStore
+    check(targetObject, defaultObject, options)
 
     // remove NULL keys from targetObject
     _.forOwn(targetObject, (val, key) => {
@@ -28,7 +29,7 @@ const objectDiff = () => {
     })
 
     // merge remaining items from objToCheck
-    //_.merge(objectToStore, targetObject)
+    _.merge(objectToStore, targetObject)
     return objectToStore
   }
 
@@ -167,7 +168,8 @@ const objectDiff = () => {
       if (_.has(target, key)) {
         if (_.isPlainObject(_.get(target, key))) {
           if (debugMode) console.log('Go deeper', path ? path + '.' + key : key)
-          check(objToCheck, defaultObject, { path: path ? path + '.' + key : key, objectToStore })
+          options.path = path ? path + '.' + key : key
+          check(objToCheck, defaultObject, options)
         }
         else if (_.isNull(_.get(target, key))) {
           if (debugMode) console.log('Remove key %s with value %j', key, _.get(target, key))
@@ -183,7 +185,7 @@ const objectDiff = () => {
             // remove from targetObject
             _.unset(target, key)
           }
-        } 
+        }
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
           if (debugMode) console.log('Store key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
@@ -191,6 +193,9 @@ const objectDiff = () => {
           // remove from targetObject
           _.unset(target, key)
         }
+      }
+      else if (_.get(options, 'addMissingProperties') && val) {
+        _.set(objectToStore, path ? path + '.' + key : key, val)
       }
     })
   }

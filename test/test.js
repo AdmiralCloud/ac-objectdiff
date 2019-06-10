@@ -67,6 +67,20 @@ const userValue = {
   }
 }
 
+const customerConfig = {
+  name: 'AdmiralCloud',
+  individualConfiguration: {
+    audioLanguages: ['de', 'en']
+  }
+}
+const customerConfigUpdate = {
+  individualConfiguration: {
+    imprint: {
+      url: 'https://www.admiralcloud.com'
+    }
+  }
+}
+
 describe('TESTING comparison', function () {
   it('Store only items that are not in defValue', (done) => {
     let testObj = _.clone(userValue)
@@ -80,6 +94,22 @@ describe('TESTING comparison', function () {
     expect(first.field).toEqual('container_name')
     expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
     expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+    return done()
+  })
+
+  it('Prepare customerConfig for storage with missingProperties', done => {
+    let testObj = _.clone(customerConfigUpdate)
+    let r = acDiff.diff(testObj, customerConfig, { addMissingProperties: true })
+    expect(r.name).toEqual(customerConfig.name)
+    expect(r.individualConfiguration.audioLanguages).toEqual(customerConfig.individualConfiguration.audioLanguages)
+    expect(r.individualConfiguration.imprint).toEqual(customerConfigUpdate.individualConfiguration.imprint)
+    return done()
+  })
+
+  it('Prepare customerConfig for storage without missing properties', done => {
+    let testObj = _.clone(customerConfigUpdate)
+    let r = acDiff.diff(testObj, customerConfig, { addMissingProperties: false })
+    expect(r.individualConfiguration).toEqual(customerConfigUpdate.individualConfiguration)
     return done()
   })
 
