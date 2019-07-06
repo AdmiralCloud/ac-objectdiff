@@ -169,6 +169,7 @@ const objectDiff = () => {
         console.log('Checking key %s - target has value %s', key, _.has(target, key))
       }
       if (_.has(target, key)) {
+        if (_.get(options, 'hasChanges')) _.set(objToCheck, 'hasChanges', true)
         if (_.isPlainObject(_.get(target, key))) {
           if (debugMode) console.log('Go deeper', path ? path + '.' + key : key)
           options.path = path ? path + '.' + key : key
@@ -201,8 +202,9 @@ const objectDiff = () => {
           _.unset(target, key)
         }
       }
-      else if (_.get(options, 'addMissingProperties') && val) {
-        _.set(objToCheck, path ? path + '.' + key : key, val)
+      else if (_.get(options, 'addMissingProperties')) {
+        if (_.get(options, 'hasChanges')) _.set(objToCheck, 'hasChanges', true)
+        if (val) _.set(objToCheck, (path ? path + '.' + key : key), val)
       }
     })
 

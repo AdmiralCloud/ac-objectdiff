@@ -78,11 +78,11 @@ const customerConfig = {
     }
   },
   internalConfiguration: {
-    export:{ 
+    export: {
       accessKeyId: 'xxxx',
       secretAccessKey: 'yyyy',
-      bucket: 'ac-zzzzz' 
-    } 
+      bucket: 'ac-zzzzz'
+    }
   }
 }
 const customerConfigUpdate = {
@@ -98,12 +98,12 @@ const customerConfigUpdate = {
     }
   },
   internalConfiguration: {
-    export:{ 
+    export: {
       accessKeyId: 'xxxx',
       secretAccessKey: 'yyyy',
-      bucket: 'ac-zzzzz' 
-    } 
-  }     
+      bucket: 'ac-zzzzz'
+    }
+  }
 }
 
 describe('TESTING comparison', function () {
@@ -206,5 +206,12 @@ describe('TESTING comparison', function () {
     expect(test.searchTypes).toEqual(compare.searchTypes)
     return done()
   })
-  
+
+  it('Check if there are any changes on the object ', done => {
+    let originalObject = { 'autoGenerate': { 'formats': [6], 'playerConfigurations': [] } }
+    let newObject = { 'autoGenerate': { 'playerConfigurations': [] } }
+    let r = acDiff.diff(newObject, originalObject, { hasChanges: true })
+    expect(r.hasChanges).toBe(true)
+    return done()
+  })
 })
