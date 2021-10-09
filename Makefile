@@ -7,8 +7,11 @@ lint-fix:
 lint-check:
 	./node_modules/.bin/eslint index.js test/test.js
 
+commit:
+	@node ./node_modules/ac-semantic-release/lib/commit.js
+
 release:
-	./node_modules/corp-semantic-release/src/index.js --branch master --useTemplate "ac-conventional-changelog-template"
+	@node ./node_modules/ac-semantic-release/lib/release.js
 
 
 .PHONY: check

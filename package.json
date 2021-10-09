@@ -1,33 +1,20 @@
 {
   "name": "ac-objectdiff",
-  "author": "Mark Poepping (https://www.mmpro.de)",
+  "author": "Mark Poepping (https://www.admiralcloud.com)",
   "license": "MIT",
-  "repository": "mmpro/ac-objectdiff",
+  "repository": "admiralcloud/ac-objectdiff",
   "version": "1.0.0",
   "dependencies": {
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "ac-conventional-changelog-template": "git+https://github.com/mmpro/ac-conventional-changelog-template.git",
-    "corp-semantic-release": "git+https://github.com/mmpro/corp-semantic-release.git",
-    "cz-customizable": "git+https://github.com/mmpro/cz-customizable.git",
-    "eslint": "6.x",
-    "expect": "^24.7.1",
-    "mocha": "6.x",
-    "mocha-jenkins-reporter": "github:mmpro/mocha-jenkins-reporter",
-    "mocha-junit-reporter": "^1.18.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    },
-    "cz-customizable": {
-      "config": ".czConfig.js"
-    }
+    "ac-semantic-release": "^0.2.7",
+    "eslint": "7.x",
+    "expect": "^27.2.5",
+    "mocha": "9.x"
   },
   "scripts": {
-    "test": "mocha --reporter spec",
-    "test-jenkins": "JUNIT_REPORT_PATH=./report.xml mocha --bail --colors --reporter mocha-jenkins-reporter --reporter-options junit_report_name='ObjectDiff'"
+    "test": "mocha --reporter spec"
   },
   "engines": {
     "node": ">=8.0.0"
