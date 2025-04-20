@@ -1,3 +1,12 @@
+
+## [1.0.2](https://github.com/admiralcloud/ac-objectdiff/compare/v1.0.1..v1.0.2) (2025-04-20 06:29:02)
+
+
+### Bug Fix
+
+* **App:** Package updates | MP | [f0626fd6fabf80106f11d691a9ba9ea7434a240e](https://github.com/admiralcloud/ac-objectdiff/commit/f0626fd6fabf80106f11d691a9ba9ea7434a240e)    
+Package updates incl switch to chai  
+Related issues:
 <a name="1.0.1"></a>
 
 ## [1.0.1](https://github.com/admiralcloud/ac-objectdiff/compare/v1.0.0..v1.0.1) (2021-10-09 11:32:56)
