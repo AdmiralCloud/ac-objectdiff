@@ -1,6 +1,8 @@
 const _ = require('lodash')
-const expect = require('expect')
 const acDiff = require('../index')
+const chai = require('chai')
+const expect = chai.expect
+
 
 const defValue = {
   searchConfiguration: {
@@ -110,11 +112,11 @@ describe('TESTING comparison', function () {
   it('Prepare customerConfig for storage - changed properties only (based on root level)', done => {
     let testObj = _.clone(customerConfigUpdate)
     let r = acDiff.diff(testObj, customerConfig)
-    expect(r.individualConfiguration.audioLanguages).toBeUndefined()
-    expect(r.individualConfiguration.imprint).toEqual(customerConfigUpdate.individualConfiguration.imprint)
-    expect(r.name).toBeUndefined()
-    expect(r.anotherConfiguration).toBeUndefined()
-    expect(r.internalConfiguration).toBeUndefined()
+    expect(r.individualConfiguration.audioLanguages).to.be.undefined
+    expect(r.individualConfiguration.imprint).to.deep.equal(customerConfigUpdate.individualConfiguration.imprint)
+    expect(r.name).to.be.undefined
+    expect(r.anotherConfiguration).to.be.undefined
+    expect(r.internalConfiguration).to.be.undefined
 
     return done()
   })
@@ -123,10 +125,10 @@ describe('TESTING comparison', function () {
     let testObj = _.clone(customerConfigUpdate)
     testObj.anotherConfiguration.config1.thisIsAnArray = [13, 11]
     let r = acDiff.diff(testObj, customerConfig)
-    expect(r.individualConfiguration.audioLanguages).toBeUndefined()
-    expect(r.individualConfiguration.imprint).toEqual(customerConfigUpdate.individualConfiguration.imprint)
-    expect(r.name).toBeUndefined()
-    expect(r.anotherConfiguration.config1.thisIsAnArray).toEqual(testObj.anotherConfiguration.config1.thisIsAnArray)
+    expect(r.individualConfiguration.audioLanguages).to.be.undefined
+    expect(r.individualConfiguration.imprint).to.deep.equal(customerConfigUpdate.individualConfiguration.imprint)
+    expect(r.name).to.be.undefined
+    expect(r.anotherConfiguration.config1.thisIsAnArray).to.deep.equal(testObj.anotherConfiguration.config1.thisIsAnArray)
 
     return done()
   })
@@ -135,13 +137,13 @@ describe('TESTING comparison', function () {
     let testObj = _.clone(userValue)
     let r = acDiff.diff(testObj, defValue)
     // concat
-    expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc'])
+    expect(r.searchConfiguration.mediaContainer.test).to.deep.equal(['abc'])
 
-    expect(r.searchConfiguration.mediaContainer.obj).toEqual({ objTest1: false, objTest3: true })
+    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal({ objTest1: false, objTest3: true })
     let first = _.first(r.searchConfiguration.mediaContainer.searchableFields.fields)
-    expect(first.field).toEqual('container_name')
-    expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
-    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+    expect(first.field).to.equal('container_name')
+    expect(first.searchTypes).to.deep.equal([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).to.equal(userValue.searchConfiguration.mediaContainer.onlyInUser)
     return done()
   })
 
@@ -149,14 +151,14 @@ describe('TESTING comparison', function () {
     let testObj = _.clone(userValue)
     _.set(testObj, 'searchConfiguration.mediaContainer.obj', null)
     let r = acDiff.diff(testObj, defValue)
-    expect(r.searchConfiguration.mediaContainer.obj).toBeUndefined()
+    expect(r.searchConfiguration.mediaContainer.obj).to.be.undefined
 
     // rest should be unchanged
-    expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc'])
+    expect(r.searchConfiguration.mediaContainer.test).to.deep.equal(['abc'])
     let first = _.first(r.searchConfiguration.mediaContainer.searchableFields.fields)
-    expect(first.field).toEqual('container_name')
-    expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
-    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+    expect(first.field).to.equal('container_name')
+    expect(first.searchTypes).to.deep.equal([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).to.equal(userValue.searchConfiguration.mediaContainer.onlyInUser)
 
     return done()
   })
@@ -165,23 +167,23 @@ describe('TESTING comparison', function () {
     let testObj = _.clone(userValue)
     let r = acDiff.merge(testObj, defValue)
     // from user value
-    expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc', 'def'])
-    expect(r.searchConfiguration.mediaContainer.obj).toEqual(userValue.searchConfiguration.mediaContainer.obj)
-    expect(r.searchConfiguration.defaultSearchFields).toEqual(defValue.searchConfiguration.defaultSearchFields)
-    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+    expect(r.searchConfiguration.mediaContainer.test).to.deep.equal(['abc', 'def'])
+    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal(userValue.searchConfiguration.mediaContainer.obj)
+    expect(r.searchConfiguration.defaultSearchFields).to.deep.equal(defValue.searchConfiguration.defaultSearchFields)
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).to.equal(userValue.searchConfiguration.mediaContainer.onlyInUser)
 
     // mediacontainer.searchableField.fields should be merged and contain 3 elements, container_name twice
     let first = _.first(r.searchConfiguration.mediaContainer.searchableFields.fields)
-    expect(first.field).toEqual('container_name')
+    expect(first.field).to.equal('container_name')
 
-    expect(first.searchTypes).toEqual([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
+    expect(first.searchTypes).to.deep.equal([ { type: 'xx', boost: 124556, suffix: 'delta' } ])
 
     let test = _.filter(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_name' })
-    expect(test.length).toEqual(2)
+    expect(test.length).to.equal(2)
 
     test = _.find(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
     let compare = _.find(defValue.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
-    expect(test.searchTypes).toEqual(compare.searchTypes)
+    expect(test.searchTypes).to.deep.equal(compare.searchTypes)
 
     return done()
   })
@@ -190,20 +192,20 @@ describe('TESTING comparison', function () {
     let testObj = _.clone(userValue)
     let r = acDiff.merge(testObj, defValue, { mergeArray: { mode: 'merge', field: 'field' } })
     // from user value
-    expect(r.searchConfiguration.mediaContainer.test).toEqual(['abc', 'def'])
-    expect(r.searchConfiguration.mediaContainer.obj).toEqual(userValue.searchConfiguration.mediaContainer.obj)
-    expect(r.searchConfiguration.mediaContainer.onlyInUser).toEqual(userValue.searchConfiguration.mediaContainer.onlyInUser)
+    expect(r.searchConfiguration.mediaContainer.test).to.deep.equal(['abc', 'def'])
+    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal(userValue.searchConfiguration.mediaContainer.obj)
+    expect(r.searchConfiguration.mediaContainer.onlyInUser).to.equal(userValue.searchConfiguration.mediaContainer.onlyInUser)
 
     // from default
-    expect(r.searchConfiguration.defaultSearchFields).toEqual(defValue.searchConfiguration.defaultSearchFields)
+    expect(r.searchConfiguration.defaultSearchFields).to.deep.equal(defValue.searchConfiguration.defaultSearchFields)
 
     let test = _.find(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_name' })
     let compareUser = _.find(userValue.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_name' })
-    expect(test.searchTypes).toEqual(compareUser.searchTypes)
+    expect(test.searchTypes).to.deep.equal(compareUser.searchTypes)
 
     test = _.find(r.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
     let compare = _.find(defValue.searchConfiguration.mediaContainer.searchableFields.fields, { field: 'container_description' })
-    expect(test.searchTypes).toEqual(compare.searchTypes)
+    expect(test.searchTypes).to.deep.equal(compare.searchTypes)
     return done()
   })
 
@@ -211,7 +213,7 @@ describe('TESTING comparison', function () {
     let originalObject = { 'autoGenerate': { 'formats': [6], 'playerConfigurations': [] } }
     let newObject = { 'autoGenerate': { 'playerConfigurations': [] } }
     let r = acDiff.diff(newObject, originalObject, { hasChanges: true })
-    expect(r.hasChanges).toBe(true)
+    expect(r.hasChanges).to.be.true
     return done()
   })
 })
