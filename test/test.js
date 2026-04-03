@@ -108,6 +108,32 @@ const customerConfigUpdate = {
   }
 }
 
+describe('TESTING input validation', function() {
+  it('diff: objToCheck is not an object', done => {
+    const r = acDiff.diff('string', customerConfig)
+    expect(r).to.deep.equal({ message: 'objToCheck_mustBeObject' })
+    return done()
+  })
+
+  it('diff: defaultObject is not an object', done => {
+    const r = acDiff.diff(customerConfig, 42)
+    expect(r).to.deep.equal({ message: 'defaultObject_mustBeObject' })
+    return done()
+  })
+
+  it('merge: objToCheck is not an object', done => {
+    const r = acDiff.merge(null, customerConfig)
+    expect(r).to.deep.equal({ message: 'objToCheck_mustBeObject' })
+    return done()
+  })
+
+  it('merge: defaultObject is not an object', done => {
+    const r = acDiff.merge(customerConfig, 'string')
+    expect(r).to.deep.equal({ message: 'defaultObject_mustBeObject' })
+    return done()
+  })
+})
+
 describe('TESTING comparison', function() {
   it('Prepare customerConfig for storage - changed properties only (based on root level)', done => {
     const testObj = _.clone(customerConfigUpdate)
@@ -148,7 +174,7 @@ describe('TESTING comparison', function() {
   })
 
   it('Send null value for obj', (done) => {
-    const testObj = _.clone(userValue)
+    const testObj = _.cloneDeep(userValue)
     _.set(testObj, 'searchConfiguration.mediaContainer.obj', null)
     const r = acDiff.diff(testObj, defValue)
     expect(r.searchConfiguration.mediaContainer.obj).to.be.undefined
@@ -168,7 +194,8 @@ describe('TESTING comparison', function() {
     const r = acDiff.merge(testObj, defValue)
     // from user value
     expect(r.searchConfiguration.mediaContainer.test).to.deep.equal(['abc', 'def'])
-    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal(userValue.searchConfiguration.mediaContainer.obj)
+    // obj is deep-merged: target wins for shared keys, missing default keys are added
+    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal({ objTest1: false, objTest2: false, objTest3: true })
     expect(r.searchConfiguration.defaultSearchFields).to.deep.equal(defValue.searchConfiguration.defaultSearchFields)
     expect(r.searchConfiguration.mediaContainer.onlyInUser).to.equal(userValue.searchConfiguration.mediaContainer.onlyInUser)
 
@@ -193,7 +220,8 @@ describe('TESTING comparison', function() {
     const r = acDiff.merge(testObj, defValue, { mergeArray: { mode: 'merge', field: 'field' } })
     // from user value
     expect(r.searchConfiguration.mediaContainer.test).to.deep.equal(['abc', 'def'])
-    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal(userValue.searchConfiguration.mediaContainer.obj)
+    // obj is deep-merged: target wins for shared keys, missing default keys are added
+    expect(r.searchConfiguration.mediaContainer.obj).to.deep.equal({ objTest1: false, objTest2: false, objTest3: true })
     expect(r.searchConfiguration.mediaContainer.onlyInUser).to.equal(userValue.searchConfiguration.mediaContainer.onlyInUser)
 
     // from default
@@ -214,6 +242,86 @@ describe('TESTING comparison', function() {
     const newObject = { 'autoGenerate': { 'playerConfigurations': [] } }
     const r = acDiff.diff(newObject, originalObject, { hasChanges: true })
     expect(r.hasChanges).to.be.true
+    return done()
+  })
+
+  it('removeEmptyObjects: false keeps empty objects', done => {
+    const base = { config: { nested: { value: 1 } } }
+    const update = { config: { nested: { value: 1 }, extra: {} } }
+    const r = acDiff.diff(update, base, { removeEmptyObjects: false })
+    expect(r.config.extra).to.deep.equal({})
+    return done()
+  })
+
+  it('removeEmptyObjects: true (default) removes empty objects', done => {
+    const base = { config: { value: 1 } }
+    const update = { config: { value: 2, empty: {} } }
+    const r = acDiff.diff(update, base)
+    expect(r.config.empty).to.be.undefined
+    return done()
+  })
+
+  it('addMissingProperties: true adds missing root-level properties from defaultObject', done => {
+    const base = { name: 'test', extra: 'default' }
+    const update = { name: 'changed' }
+    const r = acDiff.diff(update, base, { addMissingProperties: true })
+    expect(r.extra).to.equal('default')
+    return done()
+  })
+
+  it('arrays with identical values produce no diff', done => {
+    const base = { tags: ['a', 'b'] }
+    const update = { tags: ['a', 'b'] }
+    const r = acDiff.diff(update, base)
+    expect(r.tags).to.be.undefined
+    return done()
+  })
+})
+
+describe('TESTING merge - array modes', function() {
+  const defaultObj = { items: [1, 2, 3], name: 'default' }
+  const targetObj = { items: [4, 5], name: 'custom' }
+
+  it('mergeArray.mode = target uses only target plain array', done => {
+    const r = acDiff.merge(_.clone(targetObj), defaultObj, { mergeArray: { mode: 'target' } })
+    expect(r.items).to.deep.equal([4, 5])
+    return done()
+  })
+
+  it('mergeArray default mode concatenates and deduplicates plain arrays', done => {
+    const base = { tags: ['a', 'b'] }
+    const target = { tags: ['b', 'c'] }
+    const r = acDiff.merge(_.clone(target), base)
+    expect(r.tags).to.include.members(['a', 'b', 'c'])
+    expect(r.tags.length).to.equal(3)
+    return done()
+  })
+
+  it('mergeArray.mode = target for array of objects uses only target', done => {
+    const base = { fields: [{ id: 1, val: 'a' }, { id: 2, val: 'b' }] }
+    const target = { fields: [{ id: 3, val: 'c' }] }
+    const r = acDiff.merge(_.clone(target), base, { mergeArray: { mode: 'target' } })
+    expect(r.fields).to.deep.equal([{ id: 3, val: 'c' }])
+    return done()
+  })
+
+  it('path-specific mergeArray config overrides global mode', done => {
+    const base = { tags: ['a', 'b'], labels: ['x', 'y'] }
+    const target = { tags: ['c'], labels: ['z'] }
+    // tags: target mode, labels: default concat
+    const r = acDiff.merge(_.clone(target), base, {
+      mergeArray: { 'tags': { mode: 'target' }, mode: 'concat' }
+    })
+    expect(r.tags).to.deep.equal(['c'])
+    expect(r.labels).to.include.members(['x', 'y', 'z'])
+    return done()
+  })
+
+  it('merge: target key is null uses default value', done => {
+    const base = { name: 'default', count: 5 }
+    const target = { name: 'custom', count: null }
+    const r = acDiff.merge(_.clone(target), base)
+    expect(r.count).to.equal(5)
     return done()
   })
 })
