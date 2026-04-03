@@ -5,6 +5,8 @@ This way, you can store only the difference.
 
 Or use it to merge a custom object with a default object.
 
+[![Node.js CI](https://github.com/AdmiralCloud/ac-objectdiff/actions/workflows/node.js.yml/badge.svg)](https://github.com/AdmiralCloud/ac-objectdiff/actions/workflows/node.js.yml) [![CodeQL](https://github.com/AdmiralCloud/ac-objectdiff/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/AdmiralCloud/ac-objectdiff/actions/workflows/github-code-scanning/codeql)
+
 ## Usage
 
 ***objectDiff.diff(targetObj, defaultObject, options)***
