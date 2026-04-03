@@ -1,4 +1,37 @@
 
+## [1.0.3](https://github.com/admiralcloud/ac-objectdiff/compare/v1.0.2..v1.0.3) (2026-04-03 07:16:16)
+
+
+### Bug Fix
+
+* **App:** use cloneDeep to prevent userValue mutation across tests | MP | [2ed2b9ac4300b4ae20f6d0dc9494723242547865](https://github.com/admiralcloud/ac-objectdiff/commit/2ed2b9ac4300b4ae20f6d0dc9494723242547865)    
+use cloneDeep to prevent userValue mutation across tests  
+Related issues:
+* **App:** Update ESLint to version 10 | MP | [9e419e8512d21a8dd8f883f2edae0f1bf3b7a174](https://github.com/admiralcloud/ac-objectdiff/commit/9e419e8512d21a8dd8f883f2edae0f1bf3b7a174)    
+Update ESLint to version 10  
+Related issues:
+* **App:** Package updates | MP | [f1bcbd849fd010b5794d88ad5134f84b208cb3a9](https://github.com/admiralcloud/ac-objectdiff/commit/f1bcbd849fd010b5794d88ad5134f84b208cb3a9)    
+Package updates  
+Related issues:
+### Tests
+
+* **App:** Added tests | MP | [7f0c6e2128fd400f25719c2b3377166906442555](https://github.com/admiralcloud/ac-objectdiff/commit/7f0c6e2128fd400f25719c2b3377166906442555)    
+Added tests  
+Related issues:
+### Documentation
+
+* **App:** Added badges | MP | [43c0dbb5d8d98bfee1b7bdd084b735066f387360](https://github.com/admiralcloud/ac-objectdiff/commit/43c0dbb5d8d98bfee1b7bdd084b735066f387360)    
+Added badges  
+Related issues:
+### Chores
+
+* **App:** Updated README | MP | [2fa798799892087cbba32147182e85b9826b549c](https://github.com/admiralcloud/ac-objectdiff/commit/2fa798799892087cbba32147182e85b9826b549c)    
+Updated README  
+Related issues:
+* **App:** Fixed workflow and SECURITY.md | MP | [8bd4aeaf9f142af0adf0cf87160b4886763a9ed7](https://github.com/admiralcloud/ac-objectdiff/commit/8bd4aeaf9f142af0adf0cf87160b4886763a9ed7)    
+Fixed workflow and SECURITY.md  
+Related issues:
+
 ## [1.0.2](https://github.com/admiralcloud/ac-objectdiff/compare/v1.0.1..v1.0.2) (2025-04-20 06:29:02)
 
 
