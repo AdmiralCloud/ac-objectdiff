@@ -18,7 +18,7 @@ const objectDiff = () => {
       return { message: 'defaultObject_mustBeObject' }
     }
 
-    let targetObject = _.cloneDeep(objToCheck)
+    const targetObject = _.cloneDeep(objToCheck)
 
     // define default options
     options = options || {}
@@ -52,8 +52,8 @@ const objectDiff = () => {
     // define default options
     options = options || {}
 
-    let targetObject = _.cloneDeep(objToCheck)
-    let combinedObject = {}
+    const targetObject = _.cloneDeep(objToCheck)
+    const combinedObject = {}
 
     options = options || {}
     options.combinedObject = combinedObject
@@ -71,14 +71,14 @@ const objectDiff = () => {
    * @param {*} options.mergeArray -> {mode: ['concat', 'target'], field: ''} // default concat, no field - duplicate. You can alos use mergeArray.PATH.mode/field to set specific instructions for different paths
    */
   const checkMerge = (objToCheck, defaultObject, options) => {
-    let path = _.get(options, 'path')
-    let combinedObject = _.get(options, 'combinedObject')
-    let origin = path ? _.get(defaultObject, path) : defaultObject
-    let target = path ? _.get(objToCheck, path) : objToCheck
+    const path = _.get(options, 'path')
+    const combinedObject = _.get(options, 'combinedObject')
+    const origin = path ? _.get(defaultObject, path) : defaultObject
+    const target = path ? _.get(objToCheck, path) : objToCheck
     _.forOwn(origin, (val, key) => {
       if (debugMode) {
-        console.log(_.repeat('-', 60))
-        console.log('Checking key %s - target has value %s', key, _.has(target, key))
+        console.warn(_.repeat('-', 60))
+        console.warn('Checking key %s - target has value %s', key, _.has(target, key))
       }
       if (!_.has(target, key) || _.isNil(_.get(target, key))) {
         // use the default value
@@ -87,41 +87,41 @@ const objectDiff = () => {
       else {
         // target has key - use merge
         if (_.isPlainObject(_.get(target, key))) {
-          if (debugMode) console.log('Go deeper', path ? path + '.' + key : key)
+          if (debugMode) console.warn('Go deeper', path ? path + '.' + key : key)
           options.path = path ? path + '.' + key : key
           checkMerge(objToCheck, defaultObject, options)
         }
         else if (_.isArray(_.get(target, key))) {
-          let mode = _.get(options, 'mergeArray.' + (path ? path + '.' + key : key) + '.mode', _.get(options, 'mergeArray.mode', 'concat'))
-          let fieldIdentifier = _.get(options, 'mergeArray.' + (path ? path + '.' + key : key) + '.field', _.get(options, 'mergeArray.field'))
+          const mode = _.get(options, 'mergeArray.' + (path ? path + '.' + key : key) + '.mode', _.get(options, 'mergeArray.mode', 'concat'))
+          const fieldIdentifier = _.get(options, 'mergeArray.' + (path ? path + '.' + key : key) + '.field', _.get(options, 'mergeArray.field'))
           let combinedArray
           // array of objects
           if (_.isPlainObject(_.first(_.get(target, key)))) {
             if (mode === 'target') {
-              if (debugMode) console.log('Use target mode on array of objects %s', path ? path + '.' + key : key)
+              if (debugMode) console.warn('Use target mode on array of objects %s', path ? path + '.' + key : key)
               combinedArray = _.get(target, key)
             }
             else {
               if (!fieldIdentifier) {
-                if (debugMode) console.log('Use concat without fieldIdentifier for array of objects %s', path ? path + '.' + key : key)
+                if (debugMode) console.warn('Use concat without fieldIdentifier for array of objects %s', path ? path + '.' + key : key)
                 combinedArray = _.concat(_.get(target, key), _.get(origin, key))
               }
               else {
-                if (debugMode) console.log('Use targetMode with fieldIdentifier %s for array of objects %s', fieldIdentifier, path ? path + '.' + key : key)
+                if (debugMode) console.warn('Use targetMode with fieldIdentifier %s for array of objects %s', fieldIdentifier, path ? path + '.' + key : key)
                 combinedArray = []
                 _.forEach(_.get(origin, key), item => {
-                  let findParams = {}
+                  const findParams = {}
                   _.set(findParams, fieldIdentifier, _.get(item, fieldIdentifier))
-                  let test = _.find(_.get(target, key), findParams)
+                  const test = _.find(_.get(target, key), findParams)
                   if (test) {
-                    if (debugMode) console.log('Use value from objToCheck for fieldIdentifier %s for array of objects %s', fieldIdentifier, path ? path + '.' + key : key)
+                    if (debugMode) console.warn('Use value from objToCheck for fieldIdentifier %s for array of objects %s', fieldIdentifier, path ? path + '.' + key : key)
                     combinedArray.push(test)
                     // remove from target
-                    let index = _.findIndex(_.get(target, key), findParams)
+                    const index = _.findIndex(_.get(target, key), findParams)
                     _.get(target, key).splice(index, 1)
                   }
                   else {
-                    if (debugMode) console.log('Use default value for fieldIdentifier %s for array of objects %s', fieldIdentifier, path ? path + '.' + key : key)
+                    if (debugMode) console.warn('Use default value for fieldIdentifier %s for array of objects %s', fieldIdentifier, path ? path + '.' + key : key)
                     combinedArray.push(item)
                   }
                 })
@@ -133,11 +133,11 @@ const objectDiff = () => {
           else {
             // concat and clean up
             if (mode === 'target') {
-              if (debugMode) console.log('Use target mode on plain array %s', path ? path + '.' + key : key)
+              if (debugMode) console.warn('Use target mode on plain array %s', path ? path + '.' + key : key)
               combinedArray = _.get(target, key)
             }
             else {
-              if (debugMode) console.log('Concat plain arrays %s', path ? path + '.' + key : key)
+              if (debugMode) console.warn('Concat plain arrays %s', path ? path + '.' + key : key)
               combinedArray = _.uniq(_.concat(_.get(origin, key), _.get(target, key)))
             }
           }
@@ -147,7 +147,7 @@ const objectDiff = () => {
         }
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
-          if (debugMode) console.log('Store key %s with value %j', key, _.get(target, key))
+          if (debugMode) console.warn('Store key %s with value %j', key, _.get(target, key))
           _.set(combinedObject, path ? path + '.' + key : key, _.get(target, key))
           // remove from targetObject
           _.unset(target, key)
@@ -157,35 +157,35 @@ const objectDiff = () => {
   }
 
   const check = (objToCheck, defaultObject, options) => {
-    let path = _.get(options, 'path')
-    let origin = path ? _.get(defaultObject, path) : defaultObject
-    let target = path ? _.get(objToCheck, path) : objToCheck
-    let optionRemoveEmptyObjects = _.get(options, 'removeEmptyObjects', true)
+    const path = _.get(options, 'path')
+    const origin = path ? _.get(defaultObject, path) : defaultObject
+    const target = path ? _.get(objToCheck, path) : objToCheck
+    const optionRemoveEmptyObjects = _.get(options, 'removeEmptyObjects', true)
     const level = _.size(_.split(path, '.')) - 1
 
     _.forOwn(origin, (val, key) => {
       if (debugMode) {
-        console.log(_.repeat('-', 60))
-        console.log('Checking key %s - target has value %s', key, _.has(target, key))
+        console.warn(_.repeat('-', 60))
+        console.warn('Checking key %s - target has value %s', key, _.has(target, key))
       }
       if (_.has(target, key)) {
         if (_.get(options, 'hasChanges')) _.set(objToCheck, 'hasChanges', true)
         if (_.isPlainObject(_.get(target, key))) {
-          if (debugMode) console.log('Go deeper', path ? path + '.' + key : key)
+          if (debugMode) console.warn('Go deeper', path ? path + '.' + key : key)
           options.path = path ? path + '.' + key : key
           options.addMissingProperties = level > 0
           check(objToCheck, defaultObject, options)
         }
         else if (_.isNull(_.get(target, key))) {
-          if (debugMode) console.log('Remove key %s with value %j', key, _.get(target, key))
+          if (debugMode) console.warn('Remove key %s with value %j', key, _.get(target, key))
           _.unset(objToCheck, path ? path + '.' + key : key)
           // remove from targetObject
           _.unset(target, key)
         }
         else if (_.isArray(_.get(target, key))) {
-          let difference = _.differenceWith(_.get(target, key), _.get(origin, key), _.isEqual)
+          const difference = _.differenceWith(_.get(target, key), _.get(origin, key), _.isEqual)
           if (_.size(_.get(origin, key)) !== _.size(_.get(target, key)) || _.size(difference)) {
-            if (debugMode) console.log('Store Array key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
+            if (debugMode) console.warn('Store Array key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
             _.set(objToCheck, path ? path + '.' + key : key, _.get(target, key))
           }
           else {
@@ -194,7 +194,7 @@ const objectDiff = () => {
         }
         else if (_.get(target, key) !== _.get(origin, key)) {
           // store element
-          if (debugMode) console.log('Store key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
+          if (debugMode) console.warn('Store key %s with value %j | original value %j', key, _.get(target, key), _.get(origin, key))
           _.set(objToCheck, path ? path + '.' + key : key, _.get(target, key))
         }
         else if (!options.addMissingProperties) {
@@ -215,8 +215,8 @@ const objectDiff = () => {
   }
 
   const removeEmptyObjects = (objToCheck, options) => {
-    let path = _.get(options, 'path')
-    let targetObj = path ? _.get(objToCheck, path) : objToCheck
+    const path = _.get(options, 'path')
+    const targetObj = path ? _.get(objToCheck, path) : objToCheck
     options = options || {}
     _.forOwn(targetObj, (val, key) => {
       if (_.isPlainObject(val) && _.isEmpty(val)) {
