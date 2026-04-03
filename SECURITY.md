@@ -8,7 +8,10 @@ If you are using an older version, please upgrade to the latest release to recei
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability, please report it by creating a GitHub issue in this repository.
+If you discover a security vulnerability, please report it using GitHub's private "Report a vulnerability" feature (Security Advisories) for this repository, or by emailing our security team at [security@admiralcloud.com](mailto:security@admiralcloud.com).
+
+
+Please do not disclose security vulnerabilities in public GitHub issues or pull requests.
 
 Please include the following information:
 
