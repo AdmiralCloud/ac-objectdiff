@@ -83,6 +83,8 @@ const objectDiff = () => {
       if (!_.has(target, key) || _.isNil(_.get(target, key))) {
         // use the default value
         _.set(combinedObject, path ? path + '.' + key : key, _.get(origin, key))
+        // remove nil keys from targetObject so they don't overwrite defaults in final merge
+        if (_.has(target, key)) _.unset(target, key)
       }
       else {
         // target has key - use merge
