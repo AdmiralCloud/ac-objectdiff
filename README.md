@@ -68,13 +68,11 @@ let objectToStore = {
 
 ```
 # Links
-- [Website](https://www.admiralcloud.com/)
-- [Twitter (@admiralcloud)](https://twitter.com/admiralcloud)
-- [Facebook](https://www.facebook.com/MediaAssetManagement/)
+[Website](https://www.admiralcloud.com/)
 
 # Run tests
-Run "npm run test" or "npm run test-jenkins".
+Run "yarn test"
 
 ## License
 
-[MIT License](https://opensource.org/licenses/MIT) Copyright © 2009-present, AdmiralCloud, Mark Poepping
+[MIT License](https://opensource.org/licenses/MIT) Copyright © 2009-present, AdmiralCloud AG, Mark Poepping
