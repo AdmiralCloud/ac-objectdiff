@@ -9,10 +9,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "ac-semantic-release": "^0.4.11",
+    "ac-semantic-release": "^1.0.1",
     "chai": "^6.2.2",
     "eslint": "10.x",
-    "globals": "^17.4.0",
+    "globals": "^17.5.0",
     "mocha": "11.x"
   },
   "resolutions": {
