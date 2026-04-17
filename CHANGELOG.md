@@ -1,3 +1,11 @@
+## [1.0.4](https://github.com/admiralcloud/ac-objectdiff/compare/v1.0.3..v1.0.4) (2026-04-17 07:48:14)
+
+
+### Bug Fix
+
+
+* **App:** Package updates | MP | [511b5c886ddbba7c21ff21e3200c06123506d15b](https://github.com/admiralcloud/ac-objectdiff/commit/511b5c886ddbba7c21ff21e3200c06123506d15b)    
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
 
 ## [1.0.3](https://github.com/admiralcloud/ac-objectdiff/compare/v1.0.2..v1.0.3) (2026-04-03 07:16:16)
 
